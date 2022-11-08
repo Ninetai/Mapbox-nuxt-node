@@ -1,0 +1,115 @@
+<template>
+  <div class="mt-4">
+    <div class="text-center">
+      <NuxtLink to="/">
+        <Logo style="width: 60px; height: 60px;" />
+      </NuxtLink>
+    </div>
+    <b-card class="mx-auto" header="Register" style="width: 380px;">
+      <validation-observer ref="form" v-slot="{ handleSubmit }">
+        <b-form @submit.prevent="handleSubmit(onSubmit)">
+          <validation-provider
+            name="Email"
+            rules="required|email"
+            v-slot="validationContext"
+          >
+            <b-form-group label="Email address:" label-for="email">
+              <b-form-input
+                id="email"
+                v-model="form.email"
+                type="email"
+                placeholder="Enter email"
+                @input="CLEAR_ERROR"
+                :state="getValidationState(validationContext)"
+              />
+            </b-form-group>
+          </validation-provider>
+          <validation-provider
+            name="Username"
+            rules="required"
+            v-slot="validationContext"
+          >
+            <b-form-group label="Username:" label-for="username">
+              <b-form-input
+                id="username"
+                v-model="form.username"
+                placeholder="Enter username"
+                @input="CLEAR_ERROR"
+                :state="getValidationState(validationContext)"
+              />
+            </b-form-group>
+          </validation-provider>
+          <validation-provider
+            name="Password"
+            rules="required"
+            v-slot="validationContext"
+          >
+            <b-form-group label="Password:" label-for="password">
+              <b-form-input
+                id="password"
+                v-model="form.password"
+                placeholder="Enter password"
+                type="password"
+                @input="CLEAR_ERROR"
+                :state="getValidationState(validationContext)"
+              />
+            </b-form-group>
+          </validation-provider>
+
+          <b-alert v-if="error" variant="danger" show>
+            {{ error.message }}
+          </b-alert>
+
+          <b-button type="submit" variant="primary" class="mr-auto" :disabled="submittingAuth">
+            <b-spinner v-if="submittingAuth" small />
+            Register
+          </b-button>
+
+          <div class="d-flex mt-2 justify-content-end">
+            <span class="mr-2">If you are already a member,</span>
+            <NuxtLink to="login" class="font-weight-bold">
+              Login
+            </NuxtLink>
+          </div>
+        </b-form>
+      </validation-observer>
+    </b-card>
+  </div>
+</template>
+
+<script>
+import { mapState, mapMutations, mapActions } from 'vuex'
+export default {
+  layout: 'auth',
+  middleware: 'auth',
+  meta: {
+    requiresGuest: true
+  },
+  data () {
+    return {
+      form: {
+        email: '',
+        username: '',
+        password: ''
+      }
+    }
+  },
+  computed: {
+    ...mapState('auth', ['submittingAuth', 'error'])
+  },
+  mounted () {
+    this.CLEAR_ERROR()
+  },
+  methods: {
+    ...mapActions('auth', ['register']),
+    ...mapMutations('auth', ['CLEAR_ERROR']),
+    getValidationState({ dirty, validated, valid = null }) {
+      return dirty || validated ? valid : null
+    },
+    onSubmit() {
+      this.CLEAR_ERROR()
+      this.register(this.form)
+    }
+  }
+}
+</script>

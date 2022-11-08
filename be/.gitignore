@@ -1,0 +1,8 @@
+node_modules
+
+# Ignore all files starting with "."
+.env
+package-lock.json
+csv
+# Don't ignore .gitignore
+!.gitignore
