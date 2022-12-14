@@ -34,7 +34,7 @@ module.exports = {
       )
 
       if (!passwordIsValid) {
-        res.status(401).send({
+        return res.status(401).send({
           message: 'Password is incorrect.'
         })
       }
@@ -43,7 +43,7 @@ module.exports = {
         expiresIn: 86400 // 24 hours
       })
 
-      res.status(200).send({
+      return res.status(200).send({
         token,
         user
       })
